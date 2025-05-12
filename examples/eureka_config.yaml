@@ -1,0 +1,77 @@
+# Sample configuration for LiteLLM proxy with Eureka service registry
+# This config shows how to deploy LiteLLM as a microservice registered with Eureka
+
+model_list:
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: gpt-3.5-turbo
+      api_key: ${OPENAI_API_KEY}
+
+  - model_name: gpt-4
+    litellm_params:
+      model: gpt-4
+      api_key: ${OPENAI_API_KEY}
+
+# LiteLLM module settings
+litellm_settings:
+  # Set to true to drop any request parameters not recognized by the model
+  drop_params: true
+  
+  # Set the caching to true if needed
+  cache: false
+  
+  # Success callback logging set up
+  success_callback: ["prometheus"]
+
+# Router settings
+router_settings:
+  # Number of retries for the router
+  num_retries: 3
+  
+  # Set timeout in seconds for API calls
+  timeout: 30
+
+# General settings for the proxy
+general_settings:
+  # Master key for API authentication (consider using env var in production)
+  master_key: sk-1234
+
+  # Background health checks for LLM providers
+  background_health_checks: true
+  health_check_interval: 300
+
+  # Enable Eureka service registry integration
+  eureka:
+    # Application name to register with Eureka
+    app_name: litellm-proxy
+    
+    # Host name or IP of this service that other services will use to connect
+    host: ${LITELLM_SERVICE_HOST}
+    
+    # Port the service is running on
+    port: ${LITELLM_SERVICE_PORT}
+    
+    # Eureka server URLs - can be a comma-separated string or list
+    eureka_server_urls: ${EUREKA_SERVER_URLS}
+    
+    # Optional: Instance ID (if not provided, will be auto-generated)
+    # instance_id: litellm-proxy-instance-1
+    
+    # Optional: Data center name
+    data_center_name: MyOwn
+    
+    # Optional: Zone and availability zones for multi-zone deployments
+    # zone: us-east-1c
+    # eureka_availability_zones:
+    #  us-east-1c: http://eureka-server-1:8761/eureka/v2/,http://eureka-server-2:8761/eureka/v2/
+    #  us-east-1d: http://eureka-server-3:8761/eureka/v2/
+
+# Environment variables to be used by the application
+environment_variables:
+  # OpenAI API key
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
+  
+  # Eureka configuration
+  EUREKA_SERVER_URLS: http://eureka-server:8761/eureka
+  LITELLM_SERVICE_HOST: localhost
+  LITELLM_SERVICE_PORT: 4000 

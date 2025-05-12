@@ -1465,6 +1465,10 @@ class ConfigGeneralSettings(LiteLLMPydanticObjectBase):
         default=None,
         description="Set-up pass-through endpoints for provider-specific endpoints. Docs - https://docs.litellm.ai/docs/proxy/pass_through",
     )
+    eureka: Optional[Dict] = Field(
+        default=None,
+        description="Configuration for Eureka service registry. Required for microservice deployment.",
+    )
 
 
 class ConfigYAML(LiteLLMPydanticObjectBase):

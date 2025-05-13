@@ -7879,5 +7879,514 @@ async def get_config_list(
     config_type: Literal["general_settings"],
     user_api_key_dict: UserAPIKeyAuth = Depends(user_api_key_auth),
 ) -> List[ConfigList]:
-    return []
+    """
+    List the available fields + current values for a given type of setting (currently just 'general_settings'user_api_key_dict: UserAPIKeyAuth = Depends(user_api_key_auth),)
+    """
+    global prisma_client, general_settings
+
+    ## VALIDATION ##
+    """
+    - Check if prisma_client is None
+    - Check if user allowed to call this endpoint (admin-only)
+    - Check if param in general settings 
+    """
+    if prisma_client is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": CommonProxyErrors.db_not_connected_error.value},
+        )
+
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "{}, your role={}".format(
+                    CommonProxyErrors.not_allowed_access.value,
+                    user_api_key_dict.user_role,
+                )
+            },
+        )
+
+    ## get general settings from db
+    db_general_settings = await prisma_client.db.litellm_config.find_first(
+        where={"param_name": "general_settings"}
+    )
+
+    if db_general_settings is not None and db_general_settings.param_value is not None:
+        db_general_settings_dict = dict(db_general_settings.param_value)
+    else:
+        db_general_settings_dict = {}
+
+    allowed_args = {
+        "max_parallel_requests": {"type": "Integer"},
+        "global_max_parallel_requests": {"type": "Integer"},
+        "max_request_size_mb": {"type": "Integer"},
+        "max_response_size_mb": {"type": "Integer"},
+        "pass_through_endpoints": {"type": "PydanticModel"},
+    }
+
+    return_val = []
+
+    for field_name, field_info in ConfigGeneralSettings.model_fields.items():
+        if field_name in allowed_args:
+            ## HANDLE TYPED DICT
+
+            typed_dict_type = allowed_args[field_name]["type"]
+
+            if typed_dict_type == "PydanticModel":
+                if field_name == "pass_through_endpoints":
+                    pydantic_class_list = [PassThroughGenericEndpoint]
+                else:
+                    pydantic_class_list = []
+
+                for pydantic_class in pydantic_class_list:
+                    # Get type hints from the TypedDict to create FieldDetail objects
+                    nested_fields = [
+                        FieldDetail(
+                            field_name=sub_field,
+                            field_type=sub_field_type.__name__,
+                            field_description="",  # Add custom logic if descriptions are available
+                            field_default_value=general_settings.get(sub_field, None),
+                            stored_in_db=None,
+                        )
+                        for sub_field, sub_field_type in pydantic_class.__annotations__.items()
+                    ]
+
+                    idx = 0
+                    for (
+                        sub_field,
+                        sub_field_info,
+                    ) in pydantic_class.model_fields.items():
+                        if (
+                            hasattr(sub_field_info, "description")
+                            and sub_field_info.description is not None
+                        ):
+                            nested_fields[idx].field_description = (
+                                sub_field_info.description
+                            )
+                        idx += 1
+
+                    _stored_in_db = None
+                    if field_name in db_general_settings_dict:
+                        _stored_in_db = True
+                    elif field_name in general_settings:
+                        _stored_in_db = False
+
+                    _response_obj = ConfigList(
+                        field_name=field_name,
+                        field_type=allowed_args[field_name]["type"],
+                        field_description=field_info.description or "",
+                        field_value=general_settings.get(field_name, None),
+                        stored_in_db=_stored_in_db,
+                        field_default_value=field_info.default,
+                        nested_fields=nested_fields,
+                    )
+                    return_val.append(_response_obj)
+
+            else:
+                nested_fields = None
+
+                _stored_in_db = None
+                if field_name in db_general_settings_dict:
+                    _stored_in_db = True
+                elif field_name in general_settings:
+                    _stored_in_db = False
+
+                _response_obj = ConfigList(
+                    field_name=field_name,
+                    field_type=allowed_args[field_name]["type"],
+                    field_description=field_info.description or "",
+                    field_value=general_settings.get(field_name, None),
+                    stored_in_db=_stored_in_db,
+                    field_default_value=field_info.default,
+                    nested_fields=nested_fields,
+                )
+                return_val.append(_response_obj)
+
+    return return_val
+
+
+@router.post(
+    "/config/field/delete",
+    tags=["config.yaml"],
+    dependencies=[Depends(user_api_key_auth)],
+    include_in_schema=False,
+)
+async def delete_config_general_settings(
+    data: ConfigFieldDelete,
+    user_api_key_dict: UserAPIKeyAuth = Depends(user_api_key_auth),
+):
+    """
+    Delete the db value of this field in litellm general settings. Resets it to it's initial default value on litellm.
+    """
+    global prisma_client
+    ## VALIDATION ##
+    """
+    - Check if prisma_client is None
+    - Check if user allowed to call this endpoint (admin-only)
+    - Check if param in general settings 
+    """
+    if prisma_client is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": CommonProxyErrors.db_not_connected_error.value},
+        )
+    
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "{}, your role={}".format(
+                    CommonProxyErrors.not_allowed_access.value,
+                    user_api_key_dict.user_role,
+                )
+            },
+        )
+
+    if data.field_name not in ConfigGeneralSettings.model_fields:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Invalid field={} passed in.".format(data.field_name)},
+        )
+
+    ## get general settings from db
+    db_general_settings = await prisma_client.db.litellm_config.find_first(
+        where={"param_name": "general_settings"}
+    )
+    ### pop the value
+
+    if db_general_settings is None or db_general_settings.param_value is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Field name={} not in config".format(data.field_name)},
+        )
+    else:
+        general_settings = dict(db_general_settings.param_value)
+
+    ## update db
+
+    general_settings.pop(data.field_name, None)
+
+    response = await prisma_client.db.litellm_config.upsert(
+        where={"param_name": "general_settings"},
+        data={
+            "create": {"param_name": "general_settings", "param_value": json.dumps(general_settings)},  # type: ignore
+            "update": {"param_value": json.dumps(general_settings)},  # type: ignore
+        },
+    )
+
+    return response
+
+
+@router.get(
+    "/get/config/callbacks",
+    tags=["config.yaml"],
+    include_in_schema=False,
+    dependencies=[Depends(user_api_key_auth)],
+)
+async def get_config():  # noqa: PLR0915
+    """
+    For Admin UI - allows admin to view config via UI
+    # return the callbacks and the env variables for the callback
+    """
+    global llm_router, llm_model_list, general_settings, proxy_config, proxy_logging_obj, master_key
+    try:
+        import base64
+
+        all_available_callbacks = AllCallbacks()
+
+        config_data = await proxy_config.get_config()
+        _litellm_settings = config_data.get("litellm_settings", {})
+        _general_settings = config_data.get("general_settings", {})
+        environment_variables = config_data.get("environment_variables", {})
+
+        # check if "langfuse" in litellm_settings
+        _success_callbacks = _litellm_settings.get("success_callback", [])
+        _data_to_return = []
+        """
+        [
+            {
+                "name": "langfuse",
+                "variables": {
+                    "LANGFUSE_PUB_KEY": "value",
+                    "LANGFUSE_SECRET_KEY": "value",
+                    "LANGFUSE_HOST": "value"
+                },
+            }
+        ]
+        
+        """
+        for _callback in _success_callbacks:
+            if _callback != "langfuse":
+                if _callback == "openmeter":
+                    env_vars = [
+                        "OPENMETER_API_KEY",
+                    ]
+                elif _callback == "braintrust":
+                    env_vars = [
+                        "BRAINTRUST_API_KEY",
+                    ]
+                elif _callback == "traceloop":
+                    env_vars = ["TRACELOOP_API_KEY"]
+                elif _callback == "custom_callback_api":
+                    env_vars = ["GENERIC_LOGGER_ENDPOINT"]
+                elif _callback == "otel":
+                    env_vars = ["OTEL_EXPORTER", "OTEL_ENDPOINT", "OTEL_HEADERS"]
+                elif _callback == "langsmith":
+                    env_vars = [
+                        "LANGSMITH_API_KEY",
+                        "LANGSMITH_PROJECT",
+                        "LANGSMITH_DEFAULT_RUN_NAME",
+                    ]
+                else:
+                    env_vars = []
+
+                env_vars_dict = {}
+                for _var in env_vars:
+                    env_variable = environment_variables.get(_var, None)
+                    if env_variable is None:
+                        env_vars_dict[_var] = None
+                    else:
+                        # decode + decrypt the value
+                        decrypted_value = decrypt_value_helper(value=env_variable)
+                        env_vars_dict[_var] = decrypted_value
+
+                _data_to_return.append({"name": _callback, "variables": env_vars_dict})
+            elif _callback == "langfuse":
+                _langfuse_vars = [
+                    "LANGFUSE_PUBLIC_KEY",
+                    "LANGFUSE_SECRET_KEY",
+                    "LANGFUSE_HOST",
+                ]
+                _langfuse_env_vars = {}
+                for _var in _langfuse_vars:
+                    env_variable = environment_variables.get(_var, None)
+                    if env_variable is None:
+                        _langfuse_env_vars[_var] = None
+                    else:
+                        # decode + decrypt the value
+                        decrypted_value = decrypt_value_helper(value=env_variable)
+                        _langfuse_env_vars[_var] = decrypted_value
+
+                _data_to_return.append(
+                    {"name": _callback, "variables": _langfuse_env_vars}
+                )
+
+        # Check if slack alerting is on
+        _alerting = _general_settings.get("alerting", [])
+        alerting_data = []
+        if "slack" in _alerting:
+            _slack_vars = [
+                "SLACK_WEBHOOK_URL",
+            ]
+            _slack_env_vars = {}
+            for _var in _slack_vars:
+                env_variable = environment_variables.get(_var, None)
+                if env_variable is None:
+                    _value = os.getenv("SLACK_WEBHOOK_URL", None)
+                    _slack_env_vars[_var] = _value
+                else:
+                    # decode + decrypt the value
+                    _decrypted_value = decrypt_value_helper(value=env_variable)
+                    _slack_env_vars[_var] = _decrypted_value
+
+            _alerting_types = proxy_logging_obj.slack_alerting_instance.alert_types
+            _all_alert_types = (
+                proxy_logging_obj.slack_alerting_instance._all_possible_alert_types()
+            )
+            _alerts_to_webhook = (
+                proxy_logging_obj.slack_alerting_instance.alert_to_webhook_url
+            )
+            alerting_data.append(
+                {
+                    "name": "slack",
+                    "variables": _slack_env_vars,
+                    "active_alerts": _alerting_types,
+                    "alerts_to_webhook": _alerts_to_webhook,
+                }
+            )
+        # pass email alerting vars
+        _email_vars = [
+            "SMTP_HOST",
+            "SMTP_PORT",
+            "SMTP_USERNAME",
+            "SMTP_PASSWORD",
+            "SMTP_SENDER_EMAIL",
+            "TEST_EMAIL_ADDRESS",
+            "EMAIL_LOGO_URL",
+            "EMAIL_SUPPORT_CONTACT",
+        ]
+        _email_env_vars = {}
+        for _var in _email_vars:
+            env_variable = environment_variables.get(_var, None)
+            if env_variable is None:
+                _email_env_vars[_var] = None
+            else:
+                # decode + decrypt the value
+                _decrypted_value = decrypt_value_helper(value=env_variable)
+                _email_env_vars[_var] = _decrypted_value
+
+        alerting_data.append(
+            {
+                "name": "email",
+                "variables": _email_env_vars,
+            }
+        )
+
+        if llm_router is None:
+            _router_settings = {}
+        else:
+            _router_settings = llm_router.get_settings()
+
+        return {
+            "status": "success",
+            "callbacks": _data_to_return,
+            "alerts": alerting_data,
+            "router_settings": _router_settings,
+            "available_callbacks": all_available_callbacks,
+        }
+    except Exception as e:
+        verbose_proxy_logger.exception(
+            "litellm.proxy.proxy_server.get_config(): Exception occured - {}".format(
+                str(e)
+            )
+        )
+        if isinstance(e, HTTPException):
+            raise ProxyException(
+                message=getattr(e, "detail", f"Authentication Error({str(e)})"),
+                type=ProxyErrorTypes.auth_error,
+                param=getattr(e, "param", "None"),
+                code=getattr(e, "status_code", status.HTTP_400_BAD_REQUEST),
+            )
+        elif isinstance(e, ProxyException):
+            raise e
+        raise ProxyException(
+            message="Authentication Error, " + str(e),
+            type=ProxyErrorTypes.auth_error,
+            param=getattr(e, "param", "None"),
+            code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@router.get(
+    "/config/yaml",
+    tags=["config.yaml"],
+    dependencies=[Depends(user_api_key_auth)],
+    include_in_schema=False,
+)
+async def config_yaml_endpoint(config_info: ConfigYAML):
+    """
+    This is a mock endpoint, to show what you can set in config.yaml details in the Swagger UI.
+    Parameters:
+    The config.yaml object has the following attributes:
+    - **model_list**: *Optional[List[ModelParams]]* - A list of supported models on the server, along with model-specific configurations. ModelParams includes "model_name" (name of the model), "litellm_params" (litellm-specific parameters for the model), and "model_info" (additional info about the model such as id, mode, cost per token, etc).
+    - **litellm_settings**: *Optional[dict]*: Settings for the litellm module. You can specify multiple properties like "drop_params", "set_verbose", "api_base", "cache".
+    - **general_settings**: *Optional[ConfigGeneralSettings]*: General settings for the server like "completion_model" (default model for chat completion calls), "use_azure_key_vault" (option to load keys from azure key vault), "master_key" (key required for all calls to proxy), and others.
+    Please, refer to each class's description for a better understanding of the specific attributes within them.
+    Note: This is a mock endpoint primarily meant for demonstration purposes, and does not actually provide or change any configurations.
+    """
+    return {"hello": "world"}
+
+
+@router.get(
+    "/get/litellm_model_cost_map",
+    include_in_schema=False,
+    dependencies=[Depends(user_api_key_auth)],
+)
+async def get_litellm_model_cost_map():
+    try:
+        _model_cost_map = litellm.model_cost
+        return _model_cost_map
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal Server Error ({str(e)})",
+        )
+
+
+@router.get("/", dependencies=[Depends(user_api_key_auth)])
+async def home(request: Request):
+    return "LiteLLM: RUNNING"
+
+
+@router.get("/routes", dependencies=[Depends(user_api_key_auth)])
+async def get_routes():
+    """
+    Get a list of available routes in the FastAPI application.
+    """
+    routes = []
+    for route in app.routes:
+        endpoint_route = getattr(route, "endpoint", None)
+        if endpoint_route is not None:
+            route_info = {
+                "path": getattr(route, "path", None),
+                "methods": getattr(route, "methods", None),
+                "name": getattr(route, "name", None),
+                "endpoint": (
+                    endpoint_route.__name__
+                    if getattr(route, "endpoint", None)
+                    else None
+                ),
+            }
+            routes.append(route_info)
+
+    return {"routes": routes}
+
+
+#### TEST ENDPOINTS ####
+# @router.get(
+#     "/token/generate",
+#     dependencies=[Depends(user_api_key_auth)],
+#     include_in_schema=False,
+# )
+# async def token_generate():
+#     """
+#     Test endpoint. Admin-only access. Meant for generating admin tokens with specific claims and testing if they work for creating keys, etc.
+#     """
+#     # Initialize AuthJWTSSO with your OpenID Provider configuration
+#     from fastapi_sso import AuthJWTSSO
+
+#     auth_jwt_sso = AuthJWTSSO(
+#         issuer=os.getenv("OPENID_BASE_URL"),
+#         client_id=os.getenv("OPENID_CLIENT_ID"),
+#         client_secret=os.getenv("OPENID_CLIENT_SECRET"),
+#         scopes=["litellm_proxy_admin"],
+#     )
+
+#     token = auth_jwt_sso.create_access_token()
+
+#     return {"token": token}
+
+
+app.include_router(router)
+app.include_router(response_router)
+app.include_router(batches_router)
+app.include_router(rerank_router)
+app.include_router(fine_tuning_router)
+app.include_router(credential_router)
+app.include_router(llm_passthrough_router)
+app.include_router(mcp_router)
+app.include_router(anthropic_router)
+app.include_router(langfuse_router)
+app.include_router(pass_through_router)
+app.include_router(health_router)
+app.include_router(key_management_router)
+app.include_router(internal_user_router)
+app.include_router(team_router)
+app.include_router(ui_sso_router)
+app.include_router(scim_router)
+app.include_router(organization_router)
+app.include_router(customer_router)
+app.include_router(spend_management_router)
+app.include_router(caching_router)
+app.include_router(analytics_router)
+app.include_router(guardrails_router)
+app.include_router(debugging_endpoints_router)
+app.include_router(ui_crud_endpoints_router)
+app.include_router(openai_files_router)
+app.include_router(team_callback_router)
+app.include_router(budget_management_router)
+app.include_router(model_management_router)
+app.include_router(tag_management_router)
+app.include_router(enterprise_router)
 

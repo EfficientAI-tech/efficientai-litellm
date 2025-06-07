@@ -42,8 +42,7 @@ jobs:
       - name: 'Run Docker build and push for main branch'
         if: github.ref == 'refs/heads/main'
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 \
-                              --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
+          docker buildx build --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               -t ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:latest \
                               -t ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:${{ github.sha }} \
@@ -60,8 +59,7 @@ jobs:
       - name: 'Run Docker build and push for staging branch'
         if: github.ref == 'refs/heads/staging'
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 \
-                              --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
+          docker buildx build --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:latest \
                               -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:${{ github.sha }} \

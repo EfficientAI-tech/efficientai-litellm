@@ -63,8 +63,8 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
                               --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
-                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:staging \
-                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:staging-${{ github.sha }} \
+                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:latest \
+                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:${{ github.sha }} \
                               --push .
 
       - name: 'Security scan with Trivy'

@@ -1,0 +1,98 @@
+name: Build and Deploy LiteLLM to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - '**'
+      - '.github/workflows/litellm-acr-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 'Build and push image for main branch'
+        if: github.ref == 'refs/heads/main'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.PLATFORM_REGISTRY_USERNAME }}
+          password: ${{ secrets.PLATFORM_REGISTRY_PASSWORD }}
+
+      - name: 'Run Docker build and push for main branch'
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker buildx build --platform linux/amd64,linux/arm64 \
+                              --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
+                              --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
+                              -t ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:latest \
+                              -t ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:${{ github.sha }} \
+                              --push .
+
+      - name: 'Build and push image for staging branch'
+        if: github.ref == 'refs/heads/staging'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.STAGING_REGISTRY_USERNAME }}
+          password: ${{ secrets.STAGING_REGISTRY_PASSWORD }}
+
+      - name: 'Run Docker build and push for staging branch'
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          docker buildx build --platform linux/amd64,linux/arm64 \
+                              --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
+                              --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
+                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:staging \
+                              -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:staging-${{ github.sha }} \
+                              --push .
+
+      - name: 'Security scan with Trivy'
+        if: github.ref == 'refs/heads/main'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:latest
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 'Upload Trivy scan results to GitHub Security tab'
+        if: github.ref == 'refs/heads/main'
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 'Notification on success'
+        if: success()
+        run: |
+          echo "✅ LiteLLM Docker image successfully built and pushed to ACR"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Registry: ${{ github.ref == 'refs/heads/main' && secrets.PLATFORM_REGISTRY_LOGIN_SERVER || secrets.STAGING_REGISTRY_LOGIN_SERVER }}"
+
+      - name: 'Notification on failure'
+        if: failure()
+        run: |
+          echo "❌ LiteLLM Docker build and push failed"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          exit 1 

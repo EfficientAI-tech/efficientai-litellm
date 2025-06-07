@@ -98,5 +98,6 @@ litellm/pyvenv.cfg
 .vscode/*
 litellm_config.yaml
 litellm/lib64
+SwaggerAPIs.json
 
 

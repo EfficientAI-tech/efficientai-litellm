@@ -1,0 +1,16 @@
+name: Simple Test Workflow
+
+on:
+  push:
+    branches: [ staging, main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simple test
+        run: |
+          echo "✅ Workflow triggered successfully!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Repository: ${{ github.repository }}" 

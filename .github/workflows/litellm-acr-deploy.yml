@@ -62,20 +62,6 @@ jobs:
                               -t ${{ secrets.STAGING_REGISTRY_LOGIN_SERVER }}/litellm:${{ github.sha }} \
                               --push .
 
-      - name: 'Security scan with Trivy'
-        if: github.ref == 'refs/heads/production'
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:latest
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: 'Upload Trivy scan results to GitHub Security tab'
-        if: github.ref == 'refs/heads/production'
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
       - name: 'Notification on success'
         if: success()
         run: |

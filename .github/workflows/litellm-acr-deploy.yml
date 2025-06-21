@@ -5,9 +5,6 @@ on:
     branches:
       - production
       - staging
-    paths:
-      - '**'
-      - '.github/workflows/litellm-acr-deploy.yml'
   workflow_dispatch:
 
 jobs:

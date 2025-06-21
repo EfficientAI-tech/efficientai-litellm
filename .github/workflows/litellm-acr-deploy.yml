@@ -3,7 +3,7 @@ name: Build and Deploy LiteLLM to Azure Container Registry
 on:
   push:
     branches:
-      - main
+      - production
       - staging
     paths:
       - '**'
@@ -31,16 +31,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 'Build and push image for main branch'
-        if: github.ref == 'refs/heads/main'
+      - name: 'Build and push image for production branch'
+        if: github.ref == 'refs/heads/production'
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.PLATFORM_REGISTRY_USERNAME }}
           password: ${{ secrets.PLATFORM_REGISTRY_PASSWORD }}
 
-      - name: 'Run Docker build and push for main branch'
-        if: github.ref == 'refs/heads/main'
+      - name: 'Run Docker build and push for production branch'
+        if: github.ref == 'refs/heads/production'
         run: |
           docker buildx build --build-arg LITELLM_BUILD_IMAGE=cgr.dev/chainguard/python:latest-dev \
                               --build-arg LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev \
@@ -66,7 +66,7 @@ jobs:
                               --push .
 
       - name: 'Security scan with Trivy'
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/production'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ secrets.PLATFORM_REGISTRY_LOGIN_SERVER }}/litellm:latest
@@ -74,7 +74,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: 'Upload Trivy scan results to GitHub Security tab'
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/production'
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
@@ -85,7 +85,7 @@ jobs:
           echo "✅ LiteLLM Docker image successfully built and pushed to ACR"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
-          echo "Registry: ${{ github.ref == 'refs/heads/main' && secrets.PLATFORM_REGISTRY_LOGIN_SERVER || secrets.STAGING_REGISTRY_LOGIN_SERVER }}"
+          echo "Registry: ${{ github.ref == 'refs/heads/production' && secrets.PLATFORM_REGISTRY_LOGIN_SERVER || secrets.STAGING_REGISTRY_LOGIN_SERVER }}"
 
       - name: 'Notification on failure'
         if: failure()

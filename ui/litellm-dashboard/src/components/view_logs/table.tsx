@@ -36,17 +36,24 @@ export function DataTable<TData, TValue>({
   loadingMessage = "🚅 Loading logs...",
   noDataMessage = "No logs found",
 }: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
     getRowCanExpand,
+    getRowId: (row: TData, index: number) => {
+      const _row: any = row as any;
+      return (
+        _row?.request_id ??
+        String(index)
+      );
+    },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
   });
 
   return (
-    <div className="rounded-lg custom-border table-wrapper">
-      <Table className="[&_td]:py-0.5 [&_th]:py-1">
+    <div className="rounded-lg custom-border overflow-x-auto w-full max-w-full box-border">
+      <Table className="[&_td]:py-0.5 [&_th]:py-1 table-fixed w-full box-border" style={{minWidth: '800px'}}>
         <TableHead>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -93,8 +100,10 @@ export function DataTable<TData, TValue>({
 
                 {row.getIsExpanded() && (
                   <TableRow>
-                    <TableCell colSpan={row.getVisibleCells().length}>
-                      {renderSubComponent({ row })}
+                    <TableCell colSpan={row.getVisibleCells().length} className="p-0">
+                      <div className="w-full max-w-full overflow-hidden box-border">
+                        {renderSubComponent({ row })}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

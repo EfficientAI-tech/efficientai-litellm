@@ -224,28 +224,74 @@ const PROVIDER_CREDENTIAL_FIELDS: Record<Providers, ProviderCredentialField[]> =
     {
       key: "aws_access_key_id",
       label: "AWS Access Key ID",
-      required: true,
+      type: "password",
+      required: false,
       tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
     },
     {
       key: "aws_secret_access_key",
       label: "AWS Secret Access Key",
-      required: true,
+      type: "password",
+      required: false,
       tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
     },
     {
       key: "aws_region_name",
       label: "AWS Region Name",
       placeholder: "us-east-1",
-      required: true,
+      required: false,
       tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
     }
   ],
-  [Providers.Ollama]: [], // No specific fields needed
+  [Providers.SageMaker]: [
+    {
+      key: "aws_access_key_id",
+      label: "AWS Access Key ID",
+      type: "password",
+      required: false,
+      tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
+    },
+    {
+      key: "aws_secret_access_key",
+      label: "AWS Secret Access Key",
+      type: "password",
+      required: false,
+      tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
+    },
+    {
+      key: "aws_region_name",
+      label: "AWS Region Name",
+      placeholder: "us-east-1",
+      required: false,
+      tooltip: "You can provide the raw key or the environment variable (e.g. `os.environ/MY_SECRET_KEY`)."
+    }
+  ],
+  [Providers.Ollama]: [
+    {
+      key: "api_base",
+      label: "API Base",
+      placeholder: "http://localhost:11434",
+      defaultValue: "http://localhost:11434",
+      required: false,
+      tooltip: "The base URL for your Ollama server. Defaults to http://localhost:11434 if not specified."
+    }
+  ],
   [Providers.Anthropic]: [{
     key: "api_key",
     label: "API Key",
     placeholder: "sk-",
+    type: "password",
+    required: true
+  }],
+  [Providers.Deepgram]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }],
+  [Providers.ElevenLabs]: [{
+    key: "api_key",
+    label: "API Key",
     type: "password",
     required: true
   }],
@@ -292,6 +338,12 @@ const PROVIDER_CREDENTIAL_FIELDS: Record<Providers, ProviderCredentialField[]> =
     type: "password",
     required: true
   }],
+  [Providers.AIML]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }],
   [Providers.Cerebras]: [{
     key: "api_key",
     label: "API Key",
@@ -328,6 +380,20 @@ const PROVIDER_CREDENTIAL_FIELDS: Record<Providers, ProviderCredentialField[]> =
     type: "password",
     required: true
   }],
+  [Providers.GradientAI]: [
+    {
+      key: "api_base",
+      label: "GradientAI Endpoint",
+      placeholder: "https://...",
+      required: false
+    },
+    {
+      key: "api_key",
+      label: "GradientAI API Key",
+      type: "password",
+      required: true
+    }
+  ],
   [Providers.Triton]: [{
     key: "api_key",
     label: "API Key",
@@ -339,8 +405,45 @@ const PROVIDER_CREDENTIAL_FIELDS: Record<Providers, ProviderCredentialField[]> =
     label: "API Base",
     placeholder: "http://localhost:8000/generate",
     required: false
-  }
-]
+  }],
+  [Providers.Hosted_Vllm]: [
+    {
+      key: "api_base",
+      label: "API Base",
+      placeholder: "https://...",
+      required: true
+    },
+    {
+      key: "api_key",
+      label: "OpenAI API Key",
+      type: "password",
+      required: true
+    }
+  ],
+  [Providers.Voyage]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }],
+  [Providers.JinaAI]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }],
+  [Providers.VolcEngine]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }],
+  [Providers.DeepInfra]: [{
+    key: "api_key",
+    label: "API Key",
+    type: "password",
+    required: true
+  }]
 };
 
 const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
@@ -377,7 +480,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
     onChange(info: any) {
       console.log("Upload onChange triggered in ProviderSpecificFields");
       console.log("Current form values:", form.getFieldsValue());
-      
+
       if (info.file.status !== "uploading") {
         console.log(info.file, info.fileList);
       }
@@ -396,7 +499,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
             className={field.key === "vertex_credentials" ? "mb-0" : undefined}
           >
             {field.type === "select" ? (
-              <Select 
+              <Select
                 placeholder={field.placeholder}
                 defaultValue={field.defaultValue}
               >
@@ -407,14 +510,14 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
                 ))}
               </Select>
             ) : field.type === "upload" ? (
-              <Upload 
+              <Upload
                 {...handleUpload}
                 onChange={(info) => {
                   // First call the original onChange
                   if (uploadProps?.onChange) {
                     uploadProps.onChange(info);
                   }
-                  
+
                   // Check the field value after a short delay
                   setTimeout(() => {
                     const value = form.getFieldValue(field.key);
@@ -425,9 +528,9 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({
                 <Button2 icon={<UploadOutlined />}>Click to Upload</Button2>
               </Upload>
             ) : (
-              <TextInput 
-                placeholder={field.placeholder} 
-                type={field.type === "password" ? "password" : "text"} 
+              <TextInput
+                placeholder={field.placeholder}
+                type={field.type === "password" ? "password" : "text"}
               />
             )}
           </Form.Item>

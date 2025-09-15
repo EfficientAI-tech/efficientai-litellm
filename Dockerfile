@@ -61,7 +61,6 @@ RUN ls -la /app
 RUN prisma generate || true
 RUN chmod +x docker/entrypoint.sh
 RUN chmod +x docker/prod_entrypoint.sh
-RUN chmod +x docker/run_migrate.sh
 
 EXPOSE 4000/tcp
 

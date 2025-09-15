@@ -7,7 +7,6 @@ ARG LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/python:latest-dev
 # Builder stage
 FROM $LITELLM_BUILD_IMAGE AS builder
 
-# Set the working directory to /app
 WORKDIR /app
 
 USER root

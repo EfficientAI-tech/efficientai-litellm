@@ -1,4 +1,5 @@
 #!/bin/sh
+/app/docker/run_migrate.sh
 
 if [ "$SEPARATE_HEALTH_APP" = "1" ]; then
     export LITELLM_ARGS="$@"

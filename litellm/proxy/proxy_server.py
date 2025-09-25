@@ -2995,7 +2995,7 @@ class ProxyConfig:
             new_models = await prisma_client.db.litellm_proxymodeltable.find_many()
         except Exception as e:
             verbose_proxy_logger.exception(
-                "litellm.proxy_server.py::add_deployment() - Error getting new models from DB - {}".format(
+                "EfficientAI.proxy_server.py::add_deployment() - Error getting new models from DB - {}".format(
                     str(e)
                 )
             )
@@ -3307,7 +3307,7 @@ class ProxyConfig:
             )  # upsert credentials that are in the all-up list
         except Exception as e:
             verbose_proxy_logger.exception(
-                "litellm.proxy_server.py::get_credentials() - Error getting credentials from DB - {}".format(
+                "EfficientAI.proxy_server.py::get_credentials() - Error getting credentials from DB - {}".format(
                     str(e)
                 )
             )

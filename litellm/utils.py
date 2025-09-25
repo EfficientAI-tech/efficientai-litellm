@@ -815,7 +815,7 @@ def function_setup(  # noqa: PLR0915
         return logging_obj, kwargs
     except Exception as e:
         verbose_logger.exception(
-            "litellm.utils.py::function_setup() - [Non-Blocking] Error in function_setup"
+            "EfficientAI.utils.py::function_setup() - [Non-Blocking] Error in function_setup"
         )
         raise e
 

@@ -3826,7 +3826,7 @@ class Router:
         except Exception as new_exception:
             parent_otel_span = _get_parent_otel_span_from_kwargs(kwargs)
             verbose_router_logger.error(
-                "litellm.router.py::async_function_with_fallbacks() - Error occurred while trying to do fallbacks - {}\n{}\n\nDebug Information:\nCooldown Deployments={}".format(
+                "EfficientAI.router.py::async_function_with_fallbacks() - Error occurred while trying to do fallbacks - {}\n{}\n\nDebug Information:\nCooldown Deployments={}".format(
                     str(new_exception),
                     traceback.format_exc(),
                     await _async_get_cooldown_deployments_with_debug_info(
@@ -3915,9 +3915,9 @@ class Router:
         Helper function to raise a litellm Error for mock testing purposes.
 
         Raises:
-            litellm.InternalServerError: when `mock_testing_fallbacks=True` passed in request params
-            litellm.ContextWindowExceededError: when `mock_testing_context_fallbacks=True` passed in request params
-            litellm.ContentPolicyViolationError: when `mock_testing_content_policy_fallbacks=True` passed in request params
+            EfficientAI.InternalServerError: when `mock_testing_fallbacks=True` passed in request params
+            EfficientAI.ContextWindowExceededError: when `mock_testing_context_fallbacks=True` passed in request params
+            EfficientAI.ContentPolicyViolationError: when `mock_testing_content_policy_fallbacks=True` passed in request params
         """
         mock_testing_params = MockRouterTestingParams.from_kwargs(kwargs)
         if (
@@ -4132,7 +4132,7 @@ class Router:
             and mock_testing_rate_limit_error is True
         ):
             verbose_router_logger.info(
-                f"litellm.router.py::_mock_rate_limit_error() - Raising mock RateLimitError for model={model_group}"
+                f"EfficientAI.router.py::_mock_rate_limit_error() - Raising mock RateLimitError for model={model_group}"
             )
             raise litellm.RateLimitError(
                 model=model_group,

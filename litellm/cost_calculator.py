@@ -425,7 +425,7 @@ def _get_provider_for_cost_calc(
         _, custom_llm_provider, _, _ = litellm.get_llm_provider(model=model)
     except Exception as e:
         verbose_logger.debug(
-            f"litellm.cost_calculator.py::_get_provider_for_cost_calc() - Error inferring custom_llm_provider - {str(e)}"
+            f"EfficientAI.cost_calculator.py::_get_provider_for_cost_calc() - Error inferring custom_llm_provider - {str(e)}"
         )
         return None
 
@@ -759,7 +759,7 @@ def completion_cost(  # noqa: PLR0915
                         )  # strip the llm provider from the model name -> for image gen cost calculation
                     except Exception as e:
                         verbose_logger.debug(
-                            "litellm.cost_calculator.py::completion_cost() - Error inferring custom_llm_provider - {}".format(
+                            "EfficientAI.cost_calculator.py::completion_cost() - Error inferring custom_llm_provider - {}".format(
                                 str(e)
                             )
                         )
@@ -920,7 +920,7 @@ def completion_cost(  # noqa: PLR0915
                 return _final_cost
             except Exception as e:
                 verbose_logger.debug(
-                    "litellm.cost_calculator.py::completion_cost() - Error calculating cost for model={} - {}".format(
+                    "EfficientAI.cost_calculator.py::completion_cost() - Error calculating cost for model={} - {}".format(
                         model, str(e)
                     )
                 )

@@ -1055,7 +1055,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 if "Unable to locate credentials" in error_str:
                     exception_mapping_worked = True
                     raise BadRequestError(
-                        message=f"litellm.BadRequestError: SagemakerException - {error_str}",
+                        message=f"EfficientAI.BadRequestError: SagemakerException - {error_str}",
                         model=model,
                         llm_provider="sagemaker",
                         response=getattr(original_exception, "response", None),
@@ -1178,7 +1178,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 ):
                     exception_mapping_worked = True
                     raise BadRequestError(
-                        message=f"litellm.BadRequestError: VertexAIException - {error_str}",
+                        message=f"EfficientAI.BadRequestError: VertexAIException - {error_str}",
                         model=model,
                         llm_provider="vertex_ai",
                         response=httpx.Response(
@@ -1203,7 +1203,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 ):
                     exception_mapping_worked = True
                     raise litellm.InternalServerError(
-                        message=f"litellm.InternalServerError: VertexAIException - {error_str}",
+                        message=f"EfficientAI.InternalServerError: VertexAIException - {error_str}",
                         model=model,
                         llm_provider="vertex_ai",
                         response=httpx.Response(
@@ -1264,7 +1264,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 ):
                     exception_mapping_worked = True
                     raise RateLimitError(
-                        message=f"litellm.RateLimitError: VertexAIException - {error_str}",
+                        message=f"EfficientAI.RateLimitError: VertexAIException - {error_str}",
                         model=model,
                         llm_provider="vertex_ai",
                         litellm_debug_info=extra_information,
@@ -1282,7 +1282,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 ):
                     exception_mapping_worked = True
                     raise litellm.InternalServerError(
-                        message=f"litellm.InternalServerError: VertexAIException - {error_str}",
+                        message=f"EfficientAI.InternalServerError: VertexAIException - {error_str}",
                         model=model,
                         llm_provider="vertex_ai",
                         litellm_debug_info=extra_information,
@@ -1328,7 +1328,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                     if original_exception.status_code == 429:
                         exception_mapping_worked = True
                         raise RateLimitError(
-                            message=f"litellm.RateLimitError: VertexAIException - {error_str}",
+                            message=f"EfficientAI.RateLimitError: VertexAIException - {error_str}",
                             model=model,
                             llm_provider="vertex_ai",
                             litellm_debug_info=extra_information,
@@ -2033,7 +2033,7 @@ def exception_type(  # type: ignore  # noqa: PLR0915
                 ):
                     exception_mapping_worked = True
                     raise ContentPolicyViolationError(
-                        message=f"litellm.ContentPolicyViolationError: AzureException - {message}",
+                        message=f"EfficientAI.ContentPolicyViolationError: AzureException - {message}",
                         llm_provider="azure",
                         model=model,
                         litellm_debug_info=extra_information,

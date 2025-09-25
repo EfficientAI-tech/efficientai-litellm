@@ -29,7 +29,7 @@ class AuthenticationError(openai.AuthenticationError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 401
-        self.message = "litellm.AuthenticationError: {}".format(message)
+        self.message = "EfficientAI.AuthenticationError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -48,17 +48,17 @@ class AuthenticationError(openai.AuthenticationError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -75,7 +75,7 @@ class NotFoundError(openai.NotFoundError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 404
-        self.message = "litellm.NotFoundError: {}".format(message)
+        self.message = "EfficientAI.NotFoundError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -94,17 +94,17 @@ class NotFoundError(openai.NotFoundError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -121,7 +121,7 @@ class BadRequestError(openai.BadRequestError):  # type: ignore
         body: Optional[dict] = None,
     ):
         self.status_code = 400
-        self.message = "litellm.BadRequestError: {}".format(message)
+        self.message = "EfficientAI.BadRequestError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -140,17 +140,17 @@ class BadRequestError(openai.BadRequestError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -166,7 +166,7 @@ class UnprocessableEntityError(openai.UnprocessableEntityError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 422
-        self.message = "litellm.UnprocessableEntityError: {}".format(message)
+        self.message = "EfficientAI.UnprocessableEntityError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -179,17 +179,17 @@ class UnprocessableEntityError(openai.UnprocessableEntityError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -213,7 +213,7 @@ class Timeout(openai.APITimeoutError):  # type: ignore
             request=request
         )  # Call the base class constructor with the parameters it needs
         self.status_code = exception_status_code or 408
-        self.message = "litellm.Timeout: {}".format(message)
+        self.message = "EfficientAI.Timeout: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -225,17 +225,17 @@ class Timeout(openai.APITimeoutError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -251,7 +251,7 @@ class PermissionDeniedError(openai.PermissionDeniedError):  # type:ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 403
-        self.message = "litellm.PermissionDeniedError: {}".format(message)
+        self.message = "EfficientAI.PermissionDeniedError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -264,17 +264,17 @@ class PermissionDeniedError(openai.PermissionDeniedError):  # type:ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -290,7 +290,7 @@ class RateLimitError(openai.RateLimitError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 429
-        self.message = "litellm.RateLimitError: {}".format(message)
+        self.message = "EfficientAI.RateLimitError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -316,17 +316,17 @@ class RateLimitError(openai.RateLimitError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -355,22 +355,22 @@ class ContextWindowExceededError(BadRequestError):  # type: ignore
         )  # Call the base class constructor with the parameters it needs
 
         # set after, to make it clear the raised error is a context window exceeded error
-        self.message = "litellm.ContextWindowExceededError: {}".format(self.message)
+        self.message = "EfficientAI.ContextWindowExceededError: {}".format(self.message)
 
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -385,7 +385,7 @@ class RejectedRequestError(BadRequestError):  # type: ignore
         litellm_debug_info: Optional[str] = None,
     ):
         self.status_code = 400
-        self.message = "litellm.RejectedRequestError: {}".format(message)
+        self.message = "EfficientAI.RejectedRequestError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -403,17 +403,17 @@ class RejectedRequestError(BadRequestError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -428,7 +428,7 @@ class ContentPolicyViolationError(BadRequestError):  # type: ignore
         litellm_debug_info: Optional[str] = None,
     ):
         self.status_code = 400
-        self.message = "litellm.ContentPolicyViolationError: {}".format(message)
+        self.message = "EfficientAI.ContentPolicyViolationError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -445,17 +445,17 @@ class ContentPolicyViolationError(BadRequestError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -471,7 +471,7 @@ class ServiceUnavailableError(openai.APIStatusError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 503
-        self.message = "litellm.ServiceUnavailableError: {}".format(message)
+        self.message = "EfficientAI.ServiceUnavailableError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -491,17 +491,17 @@ class ServiceUnavailableError(openai.APIStatusError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -517,7 +517,7 @@ class InternalServerError(openai.InternalServerError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = 500
-        self.message = "litellm.InternalServerError: {}".format(message)
+        self.message = "EfficientAI.InternalServerError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -537,17 +537,17 @@ class InternalServerError(openai.InternalServerError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -565,7 +565,7 @@ class APIError(openai.APIError):  # type: ignore
         num_retries: Optional[int] = None,
     ):
         self.status_code = status_code
-        self.message = "litellm.APIError: {}".format(message)
+        self.message = "EfficientAI.APIError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -578,17 +578,17 @@ class APIError(openai.APIError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -604,7 +604,7 @@ class APIConnectionError(openai.APIConnectionError):  # type: ignore
         max_retries: Optional[int] = None,
         num_retries: Optional[int] = None,
     ):
-        self.message = "litellm.APIConnectionError: {}".format(message)
+        self.message = "EfficientAI.APIConnectionError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.status_code = 500
@@ -617,17 +617,17 @@ class APIConnectionError(openai.APIConnectionError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -642,7 +642,7 @@ class APIResponseValidationError(openai.APIResponseValidationError):  # type: ig
         max_retries: Optional[int] = None,
         num_retries: Optional[int] = None,
     ):
-        self.message = "litellm.APIResponseValidationError: {}".format(message)
+        self.message = "EfficientAI.APIResponseValidationError: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         request = httpx.Request(method="POST", url="https://api.openai.com/v1")
@@ -655,17 +655,17 @@ class APIResponseValidationError(openai.APIResponseValidationError):  # type: ig
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
     def __repr__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         return _message
 
 
@@ -676,7 +676,7 @@ class JSONSchemaValidationError(APIResponseValidationError):
         self.raw_response = raw_response
         self.schema = schema
         self.model = model
-        message = "litellm.JSONSchemaValidationError: model={}, returned an invalid response={}, for schema={}.\nAccess raw response with `e.raw_response`".format(
+        message = "EfficientAI.JSONSchemaValidationError: model={}, returned an invalid response={}, for schema={}.\nAccess raw response with `e.raw_response`".format(
             model, raw_response, schema
         )
         self.message = message
@@ -702,7 +702,7 @@ class UnsupportedParamsError(BadRequestError):
         num_retries: Optional[int] = None,
     ):
         self.status_code = 400
-        self.message = "litellm.UnsupportedParamsError: {}".format(message)
+        self.message = "EfficientAI.UnsupportedParamsError: {}".format(message)
         self.model = model
         self.llm_provider = llm_provider
         self.litellm_debug_info = litellm_debug_info
@@ -785,7 +785,7 @@ class MockException(openai.APIError):
         num_retries: Optional[int] = None,
     ):
         self.status_code = status_code
-        self.message = "litellm.MockException: {}".format(message)
+        self.message = "EfficientAI.MockException: {}".format(message)
         self.llm_provider = llm_provider
         self.model = model
         self.litellm_debug_info = litellm_debug_info
@@ -846,7 +846,7 @@ class MidStreamFallbackError(ServiceUnavailableError):  # type: ignore
         is_pre_first_chunk: bool = False,
     ):
         self.status_code = 503  # Service Unavailable
-        self.message = f"litellm.MidStreamFallbackError: {message}"
+        self.message = f"EfficientAI.MidStreamFallbackError: {message}"
         self.model = model
         self.llm_provider = llm_provider
         self.original_exception = original_exception
@@ -882,9 +882,9 @@ class MidStreamFallbackError(ServiceUnavailableError):  # type: ignore
     def __str__(self):
         _message = self.message
         if self.num_retries:
-            _message += f" LiteLLM Retried: {self.num_retries} times"
+            _message += f" EfficientAI Retried: {self.num_retries} times"
         if self.max_retries:
-            _message += f", LiteLLM Max Retries: {self.max_retries}"
+            _message += f", EfficientAI Max Retries: {self.max_retries}"
         if self.original_exception:
             _message += f" Original exception: {type(self.original_exception).__name__}: {str(self.original_exception)}"
         return _message

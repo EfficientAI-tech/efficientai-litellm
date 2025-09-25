@@ -43,19 +43,19 @@ def mock_response(
         RateLimitError,
     )
 
-    if mock_response == "litellm.InternalServerError":
+    if mock_response == "EfficientAI.InternalServerError":
         raise InternalServerError(
             message="this is a mock internal server error",
             llm_provider="anthropic",
             model=model,
         )
-    elif mock_response == "litellm.ContextWindowExceededError":
+    elif mock_response == "EfficientAI.ContextWindowExceededError":
         raise ContextWindowExceededError(
             message="this is a mock context window exceeded error",
             llm_provider="anthropic",
             model=model,
         )
-    elif mock_response == "litellm.RateLimitError":
+    elif mock_response == "EfficientAI.RateLimitError":
         raise RateLimitError(
             message="this is a mock rate limit error",
             llm_provider="anthropic",
